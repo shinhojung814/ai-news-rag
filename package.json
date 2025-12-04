@@ -1,4 +1,8 @@
 {
   "name": "ai-news-rag",
-  "packageManager": "yarn@4.4.0"
+  "packageManager": "yarn@4.4.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ]
 }
