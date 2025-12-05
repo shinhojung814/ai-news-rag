@@ -1,0 +1,34 @@
+import { Router } from "express";
+import { fetchNewsList, fetchNewsDetail } from "../services/newsCrawler";
+
+const router = Router();
+
+router.get("/", async (req, res) => {
+  try {
+    const category = req.query.category as string;
+    if (!category) {
+      return res.status(400).json({ error: "category is required" });
+    }
+
+    const list = await fetchNewsList(category);
+    res.json(list);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch news list" });
+  }
+});
+
+router.get("/detail", async (req, res) => {
+  try {
+    const url = req.query.url as string;
+    if (!url) {
+      return res.status(400).json({ error: "url is required" });
+    }
+
+    const detail = await fetchNewsDetail(url);
+    res.json(detail);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch news detail" });
+  }
+});
+
+export default router;
