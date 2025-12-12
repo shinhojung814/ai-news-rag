@@ -14,7 +14,7 @@ export default function NewsDetail() {
   if (!article) return <div>Loading...</div>;
 
   return (
-    <div className="px-12 py-8 max-w-3xl mx-auto">
+    <div>
       <Text as="h1" size="xl" weight="700">
         {article.title}
       </Text>

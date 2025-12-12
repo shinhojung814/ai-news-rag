@@ -21,7 +21,7 @@ export default function NewsList() {
   if (isError) return <Text color="red">Failed to load news.</Text>;
 
   return (
-    <div className="px-12 py-8">
+    <div>
       <Text as="h1" size="xl" weight="700" color="black">
         오늘의 뉴스
       </Text>

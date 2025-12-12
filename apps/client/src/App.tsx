@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Layout from "./components/layout/Layout";
 import NewsList from "./pages/NewsList";
 import NewsDetail from "./pages/NewsDetail";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const queryClient = new QueryClient();
 
@@ -10,9 +11,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<NewsList />} />
-          <Route path="/news" element={<NewsDetail />} />
-          {/* <Route path="/ai-summary" element={<AiSummary />} /> */}
+          <Route element={<Layout />}>
+            <Route path="/" element={<NewsList />} />
+            <Route path="/news" element={<NewsDetail />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>
