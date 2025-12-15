@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-app = FastAPI()
+app = FastAPI(title="AI News RAG Engine")
 
 class SummaryRequest(BaseModel):
     url: str
