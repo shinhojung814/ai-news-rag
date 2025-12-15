@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { fetchNewsList, fetchNewsDetail } from "../services/newsCrawler";
+import { fetchNewsList, fetchNewsDetail } from "../services/news.service";
 
 const router = Router();
 
