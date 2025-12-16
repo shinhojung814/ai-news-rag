@@ -53,6 +53,7 @@ yarn
 ```
 
 3. 환경 변수 설정
+
 📌 apps/client/.env
 ```
 VITE_API_SERVER_URL=http://localhost:3001
@@ -68,11 +69,6 @@ PORT=3001
 📌 apps/rag-engine/.env
 ```
 OPENAI_API_KEY=your_api_key_here
-```
-
-📌 apps/client/.env
-```
-VITE_API_SERVER_URL=http://localhost:3001
 ```
 
 4. 개발 서버 실행
