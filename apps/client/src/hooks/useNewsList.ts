@@ -6,5 +6,7 @@ export const useNewsList = (category: string) => {
   return useQuery<News[]>({
     queryKey: ["news", category],
     queryFn: () => getNewsList(category),
+    staleTime: 0,
+    refetchOnMount: true,
   });
 };
