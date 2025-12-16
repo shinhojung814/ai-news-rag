@@ -1,11 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from app.api.summary import router as summary_router
 
 app = FastAPI(title="AI News RAG Engine")
 
-class SummaryRequest(BaseModel):
-    url: str
-
-@app.post("/summary")
-def generate_summary(req: SummaryRequest):
-    return {"summary": f"URL 요약 준비됨: {req.url}"}
+app.include_router(summary_router)
