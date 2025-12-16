@@ -1,5 +1,7 @@
 🌐 AI News RAG
 
+https://ai-news-rag-client.vercel.app/
+
 이 프로젝트는 뉴스 기사를 실시간으로 수집하고,
 RAG(Retrieval-Augmented Generation)를 활용해 핵심 요약을 생성하는 풀스택 애플리케이션입니다.
 
