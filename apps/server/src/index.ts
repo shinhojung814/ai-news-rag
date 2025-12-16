@@ -9,10 +9,21 @@ const app = express();
 
 const PORT = Number(process.env.PORT) || 3001;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://ai-news-rag-client.vercel.app",
+];
+
 app.use(helmet());
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed"));
+    },
     credentials: true,
   })
 );
