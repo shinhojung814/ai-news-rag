@@ -18,65 +18,73 @@ ai-news-rag
 ```
 
 🛠 기술 스택
-Frontend
+### Frontend
 
-React 19
+- React
+- Vite
+- React Router
+- TanStack Query
+- Tailwind CSS
 
-Vite
+### Backend
 
-React Router
+- Express.js (Node.js)
+- Cheerio (뉴스 크롤링)
+- Axios
+- Helmet + CORS
 
-TanStack Query
+### RAG Engine
 
-Tailwind CSS
-
-TypeScript
-
-Backend
-
-Express.js (Node.js)
-
-Cheerio (뉴스 크롤링)
-
-Axios
-
-Helmet + CORS
-
-RAG Engine
-
-FastAPI
-
-OpenAI Embeddings / GPT-4.1 mini
-
-Chunker / Generator 모듈 구조
-
-(2차 개발 예정) Vector DB + Retriever
+- FastAPI
+- OpenAI Embeddings / GPT-4.1 mini
+- Chunker / Generator 모듈 구조
+- (2차 개발 예정) Vector DB + Retriever
 
 ⚙️ 실행 방법
 1. 레포 클론
-git clone https://github.com/your/repo.git
+```
+git clone https://github.com/shinhojung814/ai-news-rag.git
 cd ai-news-rag
+```
 
 2. 패키지 설치
+```
 yarn
+```
 
 3. 환경 변수 설정
+📌 apps/client/.env
+```
+VITE_API_SERVER_URL=http://localhost:3001
+```
+
 📌 apps/server/.env
+```
+CLIENT_URL=http://localhost:5173
 RAG_ENGINE_URL=http://localhost:8000
+PORT=3001
+```
 
 📌 apps/rag-engine/.env
+```
 OPENAI_API_KEY=your_api_key_here
+```
 
 📌 apps/client/.env
+```
 VITE_API_SERVER_URL=http://localhost:3001
+```
 
 4. 개발 서버 실행
+```
 yarn dev
+```
 
 실행 주소
-
+```
 Client → http://localhost:5173
 
 Server → http://localhost:3001
 
 RAG Engine → http://localhost:8000
+```
