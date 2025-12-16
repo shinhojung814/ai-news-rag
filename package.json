@@ -4,5 +4,11 @@
   "private": true,
   "workspaces": [
     "apps/*"
-  ]
+  ],
+  "scripts": {
+    "dev": "concurrently \"yarn workspace client dev\" \"yarn workspace server dev\" \"apps/rag-engine/dev.sh\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
 }

@@ -1,13 +1,17 @@
 import { Router } from "express";
-import { createSummary } from "../services/summary.service";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = Router();
+
+const RAG_URL = process.env.RAG_ENGINE_URL;
 
 router.post("/", async (req, res) => {
   const { title, content } = req.body;
 
   try {
-    const response = await fetch("http://localhost:8000/summary", {
+    const response = await fetch(`${RAG_URL}/summary`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, content }),
