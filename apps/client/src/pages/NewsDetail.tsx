@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useNewsDetail } from "../hooks/useNewsDetail";
 import { useSummary } from "../hooks/useSummary";
+import { useTextStream } from "../hooks/useTextStream";
 import Text from "../components/shared/Text";
 import Button from "../components/shared/Button";
 import Modal from "../components/shared/Modal";
@@ -19,6 +20,11 @@ export default function NewsDetail() {
     setOpen(true);
     requestSummary({ title: article.title, content: article.content });
   };
+
+  const summaryText =
+    typeof summaryData === "string" ? summaryData : summaryData?.summary ?? "";
+
+  const streamedText = useTextStream(summaryText, 15);
 
   if (isLoading) return <Text>Loading article...</Text>;
   if (isError) return <Text color="red">Failed to load article</Text>;
@@ -53,7 +59,7 @@ export default function NewsDetail() {
           <Text className="mt-4">요약 생성 중...</Text>
         ) : (
           <Text className="mt-4 whitespace-pre-line">
-            {summaryData?.summary ?? "요약을 가져오지 못했습니다."}
+            {streamedText ?? "요약을 가져오지 못했습니다."}
           </Text>
         )}
       </Modal>
