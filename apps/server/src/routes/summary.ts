@@ -17,7 +17,17 @@ router.post("/", async (req, res) => {
       body: JSON.stringify({ title, content }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("RAG engine error:", response.status, errorText);
+
+      return res.status(500).json({
+        summary: "요약 생성에 실패했습니다.",
+      });
+    }
+
     const data = await response.json();
+
     return res.json(data);
   } catch (error) {
     console.error("Summary API error:", error);
