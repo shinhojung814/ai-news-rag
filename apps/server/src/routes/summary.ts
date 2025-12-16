@@ -17,7 +17,7 @@ router.post("/", async (req, res) => {
     return res.json(data);
   } catch (error) {
     console.error("Summary API error:", error);
-    return res.status(500).json({ summary: "요약 생성에 실패했습니다. " });
+    return res.status(500).json({ summary: "요약 생성에 실패했습니다." });
   }
 });
 

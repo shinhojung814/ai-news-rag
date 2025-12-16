@@ -1,10 +1,11 @@
-export async function generateSummary(
-  url: string
-): Promise<{ summary: string }> {
+export async function generateSummary(payload: {
+  title: string;
+  content: string;
+}): Promise<{ summary: string }> {
   const res = await fetch("/api/summary", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
+    body: JSON.stringify(payload),
   });
 
   if (!res.ok) {

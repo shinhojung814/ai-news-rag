@@ -68,4 +68,4 @@ def generate_summary(title: str, retrieved_chunks: List[str]) -> str:
         temperature=0.2
     )
 
-    return response.choices[0].message["content"]
+    return response.choices[0].message.content

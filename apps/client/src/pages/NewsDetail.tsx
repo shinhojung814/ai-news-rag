@@ -9,15 +9,15 @@ import Modal from "../components/shared/Modal";
 export default function NewsDetail() {
   const [params] = useSearchParams();
   const url = params.get("url") || "";
-
-  const { data: article, isLoading, isError } = useNewsDetail(url);
-  const { mutate: requestSummary, data: summary, isPending } = useSummary();
-
   const [open, setOpen] = useState(false);
 
+  const { data: article, isLoading, isError } = useNewsDetail(url);
+  const { mutate: requestSummary, data: summaryData, isPending } = useSummary();
+
   const handleSummary = () => {
+    if (!article) return;
     setOpen(true);
-    requestSummary(url);
+    requestSummary({ title: article.title, content: article.content });
   };
 
   if (isLoading) return <Text>Loading article...</Text>;
@@ -53,7 +53,7 @@ export default function NewsDetail() {
           <Text className="mt-4">요약 생성 중...</Text>
         ) : (
           <Text className="mt-4 whitespace-pre-line">
-            {summary ?? "요약을 가져오지 못했습니다."}
+            {summaryData?.summary ?? "요약을 가져오지 못했습니다."}
           </Text>
         )}
       </Modal>
