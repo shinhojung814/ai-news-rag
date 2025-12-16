@@ -4,16 +4,21 @@ import { createSummary } from "../services/summary.service";
 const router = Router();
 
 router.post("/", async (req, res) => {
-  const { url } = req.body;
+  const { title, content } = req.body;
 
-  if (!url) {
-    return res.status(400).json({ error: "URL is required" });
+  try {
+    const response = await fetch("http://localhost:8000/summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, content }),
+    });
+
+    const data = await response.json();
+    return res.json(data);
+  } catch (error) {
+    console.error("Summary API error:", error);
+    return res.status(500).json({ summary: "요약 생성에 실패했습니다. " });
   }
-
-  // TODO: RAG 엔진 연결 전 임시 요약
-  const summary = await createSummary(url);
-
-  return res.json({ summary });
 });
 
 export default router;
