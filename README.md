@@ -56,17 +56,28 @@ yarn
 
 3. 환경 변수 설정
 
-📌 apps/client/.env
+📌 apps/client/.env.development
 ```
 VITE_API_SERVER_URL=http://localhost:3001
 ```
-
-📌 apps/server/.env
+📌 apps/client/.env.production
 ```
+VITE_API_SERVER_URL=https://ai-news-rag-server.onrender.com
+```
+
+📌 apps/server/.env.development
+```
+PORT=3001
 CLIENT_URL=http://localhost:5173
 RAG_ENGINE_URL=http://localhost:8000
-PORT=3001
 ```
+📌 apps/server/.env.production
+```
+PORT=3001
+CLIENT_URL=https://ai-news-rag-client.vercel.app
+RAG_ENGINE_URL=https://ai-news-rag.onrender.com
+```
+
 
 📌 apps/rag-engine/.env
 ```
