@@ -69,3 +69,29 @@ def generate_summary(title: str, retrieved_chunks: List[str]) -> str:
     )
 
     return response.choices[0].message.content
+
+def generate_answer(question: str, chunks: list[str]) -> str:
+    context = "\n\n".join(chunks)
+
+    prompt = f"""
+당신은 뉴스 기사 기반 질문에 답하는 AI입니다.
+아래 기사 문단을 근거로 질문에 답하세요.
+
+[기사 문단]
+{context}
+
+[질문]
+{question}
+
+[답변]
+"""
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system", "content": "You answer questions based on news."},
+            {"role": "user", "content": prompt}
+        ],
+        temperature=0.2
+    )
+
+    return response.choices[0].message.content.strip()
