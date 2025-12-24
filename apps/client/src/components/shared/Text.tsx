@@ -5,7 +5,7 @@ type TextProps = {
   as?: "h1" | "h2" | "h3" | "p" | "span";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   weight?: "500" | "600" | "700";
-  color?: "black" | "gray" | "blue" | "red";
+  color?: "black" | "white" | "gray" | "blue" | "red";
   className?: string;
   children: React.ReactNode;
 };
@@ -26,6 +26,7 @@ const weightClasses = {
 
 const colorClasses = {
   black: "text-black",
+  white: "white",
   gray: "text-gray-600",
   blue: "text-blue-600",
   red: "text-red-600",
