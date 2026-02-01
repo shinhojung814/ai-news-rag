@@ -2,13 +2,18 @@ import { Router } from "express";
 
 const router = Router();
 
-const RAG_URL = process.env.RAG_ENGINE_URL;
-
 router.post("/", async (req, res) => {
   const { title, content } = req.body;
 
   try {
-    const response = await fetch(`${RAG_URL}/summary`, {
+    const ragUrl = process.env.RAG_ENGINE_URL;
+
+    if (!ragUrl) {
+      console.error("RAG_ENGINE_URL is not set");
+      return res.status(500).json({ summary: "요약 생성에 실패했습니다." });
+    }
+
+    const response = await fetch(`${ragUrl}/summary`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, content }),

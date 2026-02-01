@@ -1,8 +1,8 @@
 import hashlib
 from typing import List
-from rag.chunker import split_text_into_chunks
-from rag.embedder import embed_texts
-from rag.vectordb import add_embeddings, query_similar_chunks
+from app.rag.chunker import split_text_into_chunks
+from app.rag.embedder import embed_texts
+from app.rag.vectordb import add_embeddings, query_similar_chunks
 
 def hash_id(text: str) -> str:
     """
@@ -38,3 +38,8 @@ def retrieve_context(query: str, top_k: int = 5) -> List[str]:
 
     return top_chunks
 
+def retrieve_chunks(query_embedding: List[float], top_k: int = 5) -> List[str]:
+    """
+    이미 임베딩된 query로 유사 chunk를 검색
+    """
+    return query_similar_chunks(query_embedding, top_k)

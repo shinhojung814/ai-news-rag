@@ -25,3 +25,10 @@ def embed_texts(texts: List[str]) -> List[List[float]]:
     # embedding을 추출해 리스트로 반환
     embeddings = [item.embedding for item in response.data]
     return embeddings
+
+def embed_text(text: str) -> List[float]:
+    """
+    단일 텍스트 임베딩을 반환
+    """
+    embeddings = embed_texts([text])
+    return embeddings[0] if embeddings else []

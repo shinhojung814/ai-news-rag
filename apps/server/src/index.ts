@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import dotenv from "dotenv";
+import path from "path";
 
 import newRouter from "./routes/news";
 import summaryRouter from "./routes/summary";
@@ -10,8 +11,8 @@ import qaRouter from "./routes/qa";
 dotenv.config({
   path:
     process.env.NODE_ENV === "production"
-      ? ".env.production"
-      : ".env.development",
+      ? path.resolve(__dirname, "../.env.production")
+      : path.resolve(__dirname, "../.env.development"),
 });
 
 const app = express();

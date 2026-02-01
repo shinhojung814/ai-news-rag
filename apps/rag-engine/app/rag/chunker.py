@@ -5,7 +5,7 @@ def split_text_into_chunks(
     max_chars: int = 800,
     min_chars: int = 200
 ) -> List[str]:
-    paragraphs = [p.string() for p in text.split("\n") if p.strip()]
+    paragraphs = [p for p in text.split("\n") if p.strip()]
     chunks: List[str] = []
     buffer = ""
 

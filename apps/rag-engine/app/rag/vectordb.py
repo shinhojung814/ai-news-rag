@@ -1,14 +1,8 @@
 import chromadb
-from chromadb.config import Settings
 from typing import List
 
 # persistent DB로 저장
-chroma_client = chromadb.Client(
-    Settings(
-        chroma_db_impl="duckdb+parquet",
-        persist_directory="./chroma_db"
-    )
-)
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
 
 COLLECTION_NAME = "news_chunks"
 
