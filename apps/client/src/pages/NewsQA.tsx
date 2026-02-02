@@ -4,7 +4,9 @@ import QuestionInput from "../components/NewsQA/QuestionInput";
 import AnswerBox from "../components/NewsQA/AnswerBox";
 
 export default function NewsQA() {
-  const { mutate, data, isPending } = useQA();
+  const { mutate, data, isPending, error } = useQA();
+  const errorMessage =
+    error instanceof Error ? error.message : "답변 생성에 실패했습니다.";
 
   return (
     <div className="px-12 py-8 max-w-3xl mx-auto">
@@ -20,7 +22,11 @@ export default function NewsQA() {
         <QuestionInput isLoading={isPending} onSubmit={(q) => mutate(q)} />
       </div>
 
-      <AnswerBox isLoading={isPending} answer={data?.answer} />
+      <AnswerBox
+        isLoading={isPending}
+        answer={data?.answer}
+        errorMessage={error ? errorMessage : undefined}
+      />
     </div>
   );
 }

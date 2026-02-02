@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from app.rag.qa import answer_question
 
@@ -12,5 +12,9 @@ class QAResponse(BaseModel):
 
 @router.post("/qa", response_model=QAResponse)
 async def qa(req: QARequest):
-    answer = answer_question(req.question)
-    return {"answer": answer}
+    question = req.restion.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question is required")
+    
+    answer = answer_question(question)
+    return { "answer": answer}
