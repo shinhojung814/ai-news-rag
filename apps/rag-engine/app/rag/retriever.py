@@ -18,6 +18,12 @@ def index_document(url: str, content: str):
     doc_id = hash_id(url)
     chunks = split_text_into_chunks(content)
 
+    if not chunks:
+        return {
+            "doc_id": doc_id,
+            "chunks_stored": 0
+        }
+
     embeddings = embed_texts(chunks)
 
     add_embeddings(doc_id, chunks, embeddings)
