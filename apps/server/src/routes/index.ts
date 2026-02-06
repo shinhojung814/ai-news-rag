@@ -29,7 +29,13 @@ router.post("/", async (req, res) => {
       console.error("RAG engine error:", response.status, errorText);
       return res.status(500).json({ error: "인덱싱 요청에 실패했습니다." });
     }
-  } catch (error) {}
+
+    const data = await response.json();
+    return res.json(data);
+  } catch (error) {
+    console.error("Index API error:", error);
+    return res.status(500).json({ error: "인덱싱 요청에 실패했습니다." });
+  }
 });
 
 export default router;
