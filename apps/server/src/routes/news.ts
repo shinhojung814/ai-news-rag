@@ -25,6 +25,20 @@ router.get("/detail", async (req, res) => {
     }
 
     const detail = await fetchNewsDetail(url);
+
+    const ragUrl = process.env.RAG_ENGINE_URL;
+
+    if (ragUrl && detail.content) {
+      fetch(`${ragUrl}/index`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ url: detail.url, content: detail.content }),
+      }).catch((error) => {
+        console.error("RAG index error:", error);
+      });
+    }
     res.json(detail);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch news detail" });

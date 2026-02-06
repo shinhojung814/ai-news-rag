@@ -7,6 +7,7 @@ import path from "path";
 import newRouter from "./routes/news";
 import summaryRouter from "./routes/summary";
 import qaRouter from "./routes/qa";
+import indexRouter from "./routes/index";
 
 dotenv.config({
   path:
@@ -35,13 +36,14 @@ app.use(
       return callback(new Error("CORS not allowed"));
     },
     credentials: true,
-  })
+  }),
 );
 app.use(express.json());
 
 app.use("/api/news", newRouter);
 app.use("/api/summary", summaryRouter);
 app.use("/api/qa", qaRouter);
+app.use("api/index", indexRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
