@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { fetchNewsList, fetchNewsDetail } from "../services/news.service";
+import { indexNewsDocument } from "../services/index.service";
 
 const router = Router();
 
@@ -20,25 +21,21 @@ router.get("/", async (req, res) => {
 router.get("/detail", async (req, res) => {
   try {
     const url = req.query.url as string;
+
     if (!url) {
       return res.status(400).json({ error: "url is required" });
     }
 
     const detail = await fetchNewsDetail(url);
 
-    const ragUrl = process.env.RAG_ENGINE_URL;
-
-    if (ragUrl && detail.content) {
-      fetch(`${ragUrl}/index`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    if (detail.content) {
+      indexNewsDocument({ url: detail.url, content: detail.content }).catch(
+        (error) => {
+          console.error("RAG index error:", error);
         },
-        body: JSON.stringify({ url: detail.url, content: detail.content }),
-      }).catch((error) => {
-        console.error("RAG index error:", error);
-      });
+      );
     }
+
     res.json(detail);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch news detail" });

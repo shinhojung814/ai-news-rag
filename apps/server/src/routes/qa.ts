@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
 
     const ragUrl = process.env.RAG_ENGINE_URL;
     if (!ragUrl) {
-      console.error("RAG_ENGINE_URL is not defined");
+      console.error("RAG_ENGINE_URL is not set");
       return res.status(500).json({ answer: "답변 생성에 실패했습니다." });
     }
 
@@ -30,6 +30,7 @@ router.post("/", async (req, res) => {
     }
 
     const data = await response.json();
+
     return res.json(data);
   } catch (e) {
     console.error("QA API error:", e);
