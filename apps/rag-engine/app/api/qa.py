@@ -12,7 +12,7 @@ class QAResponse(BaseModel):
 
 @router.post("/qa", response_model=QAResponse)
 async def qa(req: QARequest):
-    question = req.restion.strip()
+    question = req.question.strip()
     if not question:
         raise HTTPException(status_code=400, detail="question is required")
     
