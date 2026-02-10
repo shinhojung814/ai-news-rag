@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from app.rag.embedder import embed_text
 from app.rag.retriever import retrieve_chunks
 from app.rag.generator import generate_answer
@@ -14,18 +14,24 @@ CATEGORY_KEYWORDS = {
     "과학": "science",
 }
 
-def _infer_filters(question: str) -> dict:
-    filters = {}
+def _infer_filters(question: str):
+    clauses = []
 
     if "오늘" in question:
-        filters["crawled_date"] = datetime.now().date().isoformat()
-    
+        clauses.append({"crawled_date": datetime.now().date().isoformat()})
+
     for k, v in CATEGORY_KEYWORDS.items():
         if k in question:
-            filters["category"] = v
+            clauses.append({"category": v})
             break
+
+    if not clauses:
+        return None
     
-    return filters
+    if len(clauses) == 1:
+        return clauses[0]
+    
+    return {"$and": clauses}
 
 def answer_question(question: str) -> str:
     # 1. 질문 임베딩
@@ -33,7 +39,7 @@ def answer_question(question: str) -> str:
 
     # 2. 관련 뉴스 chunk 검색
     filters = _infer_filters(question)
-    chunks = retrieve_chunks(query_embedding, top_k=5, where=filters or None)
+    chunks = retrieve_chunks(query_embedding, top_k=5, where=filters)
 
     if not chunks and filters:
         chunks = retrieve_chunks(query_embedding, top_k=5)

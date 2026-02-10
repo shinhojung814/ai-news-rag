@@ -57,4 +57,9 @@ def query_similar_chunks(
         where=where
     )
 
-    return results["documents"][0]
+    docs = results.get("documents", [])
+    
+    if not docs or not docs[0]:
+        return []
+
+    return docs[0]
