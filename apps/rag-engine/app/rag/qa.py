@@ -1,13 +1,42 @@
+import datetime
 from app.rag.embedder import embed_text
 from app.rag.retriever import retrieve_chunks
 from app.rag.generator import generate_answer
+
+CATEGORY_KEYWORDS = {
+    "사회": "society",
+    "경제": "economy",
+    "정치": "politics",
+    "세계": "world",
+    "생활": "life",
+    "문화": "culture",
+    "IT": "it",
+    "과학": "science",
+}
+
+def _infer_filters(question: str) -> dict:
+    filters = {}
+
+    if "오늘" in question:
+        filters["crawled_date"] = datetime.now().date().isoformat()
+    
+    for k, v in CATEGORY_KEYWORDS.items():
+        if k in question:
+            filters["category"] = v
+            break
+    
+    return filters
 
 def answer_question(question: str) -> str:
     # 1. 질문 임베딩
     query_embedding = embed_text(question)
 
     # 2. 관련 뉴스 chunk 검색
-    chunks = retrieve_chunks(query_embedding, top_k=5)
+    filters = _infer_filters(question)
+    chunks = retrieve_chunks(query_embedding, top_k=5, where=filters or None)
+
+    if not chunks and filters:
+        chunks = retrieve_chunks(query_embedding, top_k=5)
 
     # 3. 답변 생성
     if not chunks:

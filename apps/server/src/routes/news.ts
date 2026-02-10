@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { fetchNewsList, fetchNewsDetail } from "../services/news.service";
-import { indexNewsDocument } from "../services/index.service";
+import { indexNewsDocument, IndexPayload } from "../services/index.service";
 
 const router = Router();
 
@@ -21,6 +21,7 @@ router.get("/", async (req, res) => {
 router.get("/detail", async (req, res) => {
   try {
     const url = req.query.url as string;
+    const category = (req.query.category as string) || undefined;
 
     if (!url) {
       return res.status(400).json({ error: "url is required" });
@@ -28,12 +29,20 @@ router.get("/detail", async (req, res) => {
 
     const detail = await fetchNewsDetail(url);
 
+    const payload: IndexPayload = {
+      url: detail.url,
+      content: detail.content,
+    };
+
+    if (detail.title) payload.title = detail.title;
+    if (detail.press) payload.press = detail.press;
+    if (category) payload.category = category;
+    payload.crawledAt = new Date().toISOString();
+
     if (detail.content) {
-      indexNewsDocument({ url: detail.url, content: detail.content }).catch(
-        (error) => {
-          console.error("RAG index error:", error);
-        },
-      );
+      indexNewsDocument(payload).catch((error) => {
+        console.error("RAG index error:", error);
+      });
     }
 
     res.json(detail);

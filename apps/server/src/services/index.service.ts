@@ -1,6 +1,10 @@
 export interface IndexPayload {
   url: string;
   content: string;
+  title?: string;
+  press?: string;
+  category?: string;
+  crawledAt?: string;
 }
 
 export async function indexNewsDocument(payload: IndexPayload) {

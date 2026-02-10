@@ -1,5 +1,5 @@
 import chromadb
-from typing import List
+from typing import Any, Dict, List, Optional
 
 # persistent DB로 저장
 chroma_client = chromadb.PersistentClient(path="./chroma_db")
@@ -18,7 +18,8 @@ def get_collection():
 def add_embeddings(
     doc_id: str,
     chunks: List[str],
-    embeddings: List[List[float]]
+    embeddings: List[List[float]],
+    metadata: Optional[Dict[str, Any]] = None
 ):
     """
     기사 1개에 대한 chunk + embedding을 DB에 저장
@@ -28,16 +29,22 @@ def add_embeddings(
 
     ids = [f"{doc_id}_{i}" for i in range(len(chunks))]
 
+    base_meta = {"doc_id": doc_id}
+
+    if metadata:
+        base_meta.update(metadata)
+
     collection.add(
         ids=ids,
         documents=chunks,
         embeddings=embeddings,
-        metadatas=[{"doc_id": doc_id} for _ in chunks]
+        metadatas=[base_meta for _ in chunks]
     )
 
 def query_similar_chunks(
     query_embedding: List[float],
-    top_k: int = 5
+    top_k: int = 5,
+    where: Optional[Dict[str, Any]] = None
 ):
     """
     요약 프롬프트 생성을 위한 유사 chunk 검색
@@ -46,7 +53,8 @@ def query_similar_chunks(
 
     results = col.query(
         query_embeddings=[query_embedding],
-        n_results=top_k
+        n_results=top_k,
+        where=where
     )
 
     return results["documents"][0]

@@ -37,9 +37,9 @@ export async function fetchNewsDetail(url: string) {
   const press = $(".media_end_head_top_logo img").attr("alt");
 
   return {
+    url,
     title,
     content,
     press,
-    url,
   };
 }
