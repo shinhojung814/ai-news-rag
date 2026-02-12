@@ -9,7 +9,7 @@ import CategoryTabs from "../components/NewsList/CategoryTabs";
 
 export default function NewsList() {
   const navigate = useNavigate();
-  const [category, setCategory] = useState<CategoryId>("101");
+  const [category, setCategory] = useState<CategoryId>("economy");
   const { data: news = [], isLoading, isError } = useNewsList(category);
 
   const handleClick = (item: News) => {

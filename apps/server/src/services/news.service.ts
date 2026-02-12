@@ -1,4 +1,5 @@
 import axios from "axios";
+import iconv from "iconv-lite";
 import * as cheerio from "cheerio";
 
 const SID1: Record<string, string> = {
@@ -21,8 +22,9 @@ export async function fetchNewsList(category: string) {
 
   const url = `https://news.naver.com/main/list.naver?mode=LSD&mid=sec&sid1=${sid1}`;
 
-  const { data } = await axios.get(url);
-  const $ = cheerio.load(data);
+  const { data } = await axios.get(url, { responseType: "arraybuffer" });
+  const decoded = iconv.decode(Buffer.from(data), "euc-kr");
+  const $ = cheerio.load(decoded);
 
   const articles: any[] = [];
 
