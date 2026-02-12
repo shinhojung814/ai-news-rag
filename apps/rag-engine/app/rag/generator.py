@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 from typing import List
 from openai import OpenAI
 
@@ -8,6 +9,25 @@ load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 MODEL_NAME = "gpt-4.1-mini"
+
+def _format_source_line(source: dict) -> str:
+    title = source.get("title") or "기사 제목 미상"
+    url = source.get("url") or ""
+    date_str = source.get("crawled_date")
+
+    if date_str:
+        try:
+            dt = datetime.strptime(date_str, "%Y-%m-%d")
+            dow = ["월요일","화요일","수요일","목요일","금요일","토요일","일요일"][dt.weekday()]
+            date_kor = f"{dt.year}년 {dt.month}월 {dt.day}일 {dow}"
+        except Exception:
+            date_kor = date_str
+    else:
+        date_kor = "날짜 미상"
+
+    if url:
+        return f"{date_kor} 기사 \"{title}\"에 따르면({url}),"
+    return f"{date_kor} 기사 \"{title}\"에 따르면,"
 
 def build_prompt(title: str, chunks: List[str]) -> str:
     """
@@ -47,8 +67,6 @@ def build_prompt(title: str, chunks: List[str]) -> str:
         3) 핵심 내용 3
         - 세부 내용 1
         - 세부 내용 2
-
-        == 요약 시작 ==
     """
 
 def generate_summary(title: str, retrieved_chunks: List[str]) -> str:
@@ -70,8 +88,9 @@ def generate_summary(title: str, retrieved_chunks: List[str]) -> str:
 
     return response.choices[0].message.content
 
-def generate_answer(question: str, chunks: list[str]) -> str:
+def generate_answer(question: str, chunks: list[str], sources: list[dict]) -> str:
     context = "\n\n".join(chunks)
+    source_line = _format_source_line(sources[0]) if sources else "기사에 따르면,"
 
     prompt = f"""
 당신은 뉴스 기사 기반 질문에 답하는 AI입니다.
@@ -82,6 +101,13 @@ def generate_answer(question: str, chunks: list[str]) -> str:
 
 [질문]
 {question}
+
+[답변 지시]
+- 첫 문장은 반드시 다음 형식으로 시작하세요:
+  "{source_line}"
+- 근거가 되는 기사 정보를 생략하지 마세요.
+- 기사에 없는 추론/가정은 하지 마세요.
+- 한국어로 답하세요.
 
 [답변]
 """

@@ -4,7 +4,7 @@ export interface IndexPayload {
   title?: string;
   press?: string;
   category?: string;
-  crawledAt?: string;
+  crawled_at?: string;
 }
 
 export async function indexNewsDocument(payload: IndexPayload) {

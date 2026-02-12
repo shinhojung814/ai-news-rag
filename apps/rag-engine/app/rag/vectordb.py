@@ -54,12 +54,14 @@ def query_similar_chunks(
     results = col.query(
         query_embeddings=[query_embedding],
         n_results=top_k,
-        where=where
+        where=where,
+        include=["documents", "metadatas"]
     )
 
     docs = results.get("documents", [])
-    
-    if not docs or not docs[0]:
-        return []
+    metas = results.get("metadatas", [])
 
-    return docs[0]
+    if not docs or not docs[0]:
+        return {"documents": [], "metadatas": []}
+
+    return {"documents": docs[0], "metadatas": metas[0]}

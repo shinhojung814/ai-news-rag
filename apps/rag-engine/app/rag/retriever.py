@@ -1,15 +1,31 @@
 import hashlib
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 from datetime import datetime
 from app.rag.chunker import split_text_into_chunks
 from app.rag.embedder import embed_texts
 from app.rag.vectordb import add_embeddings, query_similar_chunks
+
+class RetrievedResult(TypedDict):
+    documents: List[str]
+    metadatas: List[Dict[str, Any]]
 
 def hash_id(text: str) -> str:
     """
     URL 또는 텍스트 기반으로 고유한 ID 생성
     """
     return hashlib.md5(text.encode("utf-8")).hexdigest()
+
+def _sanitize_meta(meta: Dict[str, Any]) -> Dict[str, Any]:
+    clean = {}
+
+    for k, v in meta.items():
+        if isinstance(v, (list, tuple)):
+            v = v[0] if v else None
+
+        if v is None or isinstance(v, (str, int, float, bool)):
+            clean[k] = v
+    
+    return clean
 
 def index_document(url: str, content: str, metadata: Optional[Dict[str, Any]] = None):
     """
@@ -26,7 +42,7 @@ def index_document(url: str, content: str, metadata: Optional[Dict[str, Any]] = 
         }
     
     # 메타데이터 보강
-    meta = dict(metadata or {})
+    meta = _sanitize_meta(dict(metadata or {}))
 
     # 날짜 필터링
     crawled_at = meta.get("crawled_at")
@@ -62,7 +78,7 @@ def retrieve_context(query: str, top_k: int = 5) -> List[str]:
 
     return top_chunks
 
-def retrieve_chunks(query_embedding: List[float], top_k: int = 5, where: Optional[Dict[str, Any]] = None) -> List[str]:
+def retrieve_chunks(query_embedding: List[float], top_k: int = 5, where: Optional[Dict[str, Any]] = None) -> RetrievedResult:
     """
     이미 임베딩된 query로 유사 chunk를 검색
     """

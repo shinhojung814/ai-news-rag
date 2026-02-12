@@ -1,6 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from app.rag.retriever import index_document
 
 router = APIRouter()
@@ -8,10 +8,10 @@ router = APIRouter()
 class IndexRequest(BaseModel):
     url: str
     content: str
-    title: Optional[str] = None,
-    press: Optional[str] = None,
-    category: Optional[str] = None,
-    crawled_at: Optional[str] = None
+    title: Optional[str] = None
+    press: Optional[str] = None
+    category: Optional[str] = None
+    crawled_at: Optional[str] = Field(default=None, alias="crawledAt")
 
 
 @router.post("/index")

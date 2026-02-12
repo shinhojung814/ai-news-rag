@@ -37,7 +37,7 @@ router.get("/detail", async (req, res) => {
     if (detail.title) payload.title = detail.title;
     if (detail.press) payload.press = detail.press;
     if (category) payload.category = category;
-    payload.crawledAt = new Date().toISOString();
+    payload.crawled_at = new Date().toISOString();
 
     if (detail.content) {
       indexNewsDocument(payload).catch((error) => {
