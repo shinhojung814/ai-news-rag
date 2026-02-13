@@ -14,13 +14,17 @@ export async function indexNewsDocument(payload: IndexPayload) {
     throw new Error("RAG_ENGINE_URL is not set");
   }
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000);
+
   const response = await fetch(`${ragUrl}/index`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
+    signal: controller.signal,
   });
+
+  clearTimeout(timeout);
 
   if (!response.ok) {
     const errorText = await response.text();

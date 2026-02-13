@@ -28,8 +28,8 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function withRetry<T>(
   fn: () => Promise<T>,
-  retries = 3,
-  baseDelay = 500,
+  retries = 5,
+  baseDelay = 3000,
 ) {
   let attempt = 0;
   while (true) {
@@ -37,9 +37,12 @@ async function withRetry<T>(
       return await fn();
     } catch (error: any) {
       attempt += 1;
-      const status = error?.message?.includes("429") ? 429 : undefined;
+      const msg = String(error?.message || "");
+      const is429 = msg.includes("429");
+      const isTimeout =
+        msg.includes("Headers Timeout") || msg.includes("timeout");
 
-      if (attempt > retries || status !== 429) {
+      if (attempt > retries || (!is429 && !isTimeout)) {
         throw error;
       }
 
@@ -72,10 +75,10 @@ async function indexCategory(category: string) {
 
     if (detail.press) payload.press = detail.press;
 
-    await withRetry(() => indexNewsDocument(payload), 3, 500);
+    await withRetry(() => indexNewsDocument(payload), 5, 3000);
     console.log(`[indexed] ${category} | ${detail.title} | ${detail.url}`);
 
-    await sleep(300);
+    await sleep(1200);
   }
 }
 
