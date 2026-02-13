@@ -24,6 +24,31 @@ const LIMIT_PER_CATEGORY = 10;
 
 const seen = new Set<string>();
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  baseDelay = 500,
+) {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      attempt += 1;
+      const status = error?.message?.includes("429") ? 429 : undefined;
+
+      if (attempt > retries || status !== 429) {
+        throw error;
+      }
+
+      const wait = baseDelay * Math.pow(2, attempt - 1);
+      await sleep(wait);
+    }
+  }
+}
+
 async function indexCategory(category: string) {
   const list = await fetchNewsList(category);
 
@@ -47,8 +72,10 @@ async function indexCategory(category: string) {
 
     if (detail.press) payload.press = detail.press;
 
-    await indexNewsDocument(payload);
+    await withRetry(() => indexNewsDocument(payload), 3, 500);
     console.log(`[indexed] ${category} | ${detail.title} | ${detail.url}`);
+
+    await sleep(300);
   }
 }
 
@@ -56,6 +83,7 @@ async function main() {
   for (const category of CATEGORIES) {
     console.log(`Indexing category: ${category}`);
     await indexCategory(category);
+    await sleep(1000);
   }
   console.log("batch indexing completed.");
 }
