@@ -80,7 +80,7 @@ async function indexCategory(category: string) {
     await withRetry(() => indexNewsDocument(payload), 5, 3000);
     console.log(`[indexed] ${category} | ${detail.title} | ${detail.url}`);
 
-    await sleep(1200);
+    await sleep(2000);
   }
 }
 

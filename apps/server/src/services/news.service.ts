@@ -2,6 +2,12 @@ import axios from "axios";
 import iconv from "iconv-lite";
 import * as cheerio from "cheerio";
 
+const DEFAULT_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+  "Accept-Language": "ko-KR,ko;q=0.9,en;q=0.8",
+};
+
 const SID1: Record<string, string> = {
   politics: "100",
   economy: "101",
@@ -12,6 +18,26 @@ const SID1: Record<string, string> = {
   it: "105",
   science: "105",
 };
+
+async function withRetry<T>(
+  fn: () => Promise<T>,
+  retries = 5,
+  baseDelay = 3000,
+) {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (err: any) {
+      attempt += 1;
+      const msg = String(err?.message || "");
+      const is429 = msg.includes("429");
+      if (!is429 || attempt > retries) throw err;
+      const wait = baseDelay * Math.pow(2, attempt - 1);
+      await new Promise((r) => setTimeout(r, wait));
+    }
+  }
+}
 
 export async function fetchNewsList(category: string) {
   const sid1 = SID1[category];
@@ -51,7 +77,10 @@ export async function fetchNewsList(category: string) {
 }
 
 export async function fetchNewsDetail(url: string) {
-  const { data } = await axios.get(url);
+  const { data } = await withRetry(() =>
+    axios.get(url, { headers: DEFAULT_HEADERS, timeout: 20000 }),
+  );
+
   const $ = cheerio.load(data);
 
   const title =
