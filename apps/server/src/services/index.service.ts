@@ -15,7 +15,7 @@ export async function indexNewsDocument(payload: IndexPayload) {
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 45000);
+  const timeout = setTimeout(() => controller.abort(), 90000);
 
   const response = await fetch(`${ragUrl}/index`, {
     method: "POST",
