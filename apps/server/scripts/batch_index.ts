@@ -40,7 +40,9 @@ async function withRetry<T>(
       const msg = String(error?.message || "");
       const is429 = msg.includes("429");
       const isTimeout =
-        msg.includes("Headers Timeout") || msg.includes("timeout");
+        msg.includes("AbortError") ||
+        msg.includes("Headers Timeout") ||
+        msg.includes("timeout");
 
       if (attempt > retries || (!is429 && !isTimeout)) {
         throw error;
