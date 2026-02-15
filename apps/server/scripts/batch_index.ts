@@ -77,8 +77,12 @@ async function indexCategory(category: string) {
 
     if (detail.press) payload.press = detail.press;
 
-    await withRetry(() => indexNewsDocument(payload), 5, 3000);
-    console.log(`[indexed] ${category} | ${detail.title} | ${detail.url}`);
+    try {
+      await withRetry(() => indexNewsDocument(payload), 5, 3000);
+      console.log(`[indexed] ${category} | ${detail.title} | ${detail.url}`);
+    } catch (e) {
+      console.warn(`[skip] index failed: ${detail.url}`);
+    }
 
     await sleep(2000);
   }
