@@ -1,99 +1,133 @@
-🌐 AI News RAG
+# AI News RAG
 
-https://ai-news-rag-client.vercel.app/
+네이버 뉴스 기사 목록/본문을 수집하고, RAG(Retrieval-Augmented Generation)로 기사 요약과 뉴스 기반 Q&A를 제공하는 모노레포 프로젝트입니다.
 
-이 프로젝트는 뉴스 기사를 실시간으로 수집하고,
-RAG(Retrieval-Augmented Generation)를 활용해 핵심 요약을 생성하는 풀스택 애플리케이션입니다.
+현재 구현은 단순 요약을 넘어, 기사 인덱싱(ChromaDB), 메타데이터 기반 검색 필터, 채팅형 Q&A UI까지 포함합니다.
 
-Monorepo(Yarn Workspaces + Vite + Express + FastAPI) 기반 구조로 구성되며,
-향후 뉴스 기반 AI Q&A 기능을 확장할 수 있도록 설계되었습니다.
+## 주요 기능
 
-📁 폴더 구조
+- 뉴스 목록 조회: 카테고리별 기사 리스트 조회
+- 뉴스 상세 조회: 기사 본문/언론사 정보 조회
+- 자동 인덱싱: 상세 기사 조회 시 RAG 엔진에 본문 자동 인덱싱
+- 기사 요약: 선택 기사에 대해 GPT 기반 구조화 요약 생성
+- 뉴스 Q&A: 누적 인덱스 기반 질의응답
+- 질의 필터 추론: 질문에 `오늘`, `경제/사회/정치/...` 키워드가 있으면 날짜/카테고리 필터 적용
+- UI 텍스트 스트리밍: 요약/답변을 타이핑 애니메이션 형태로 표시
+
+## 아키텍처
+
+```text
+apps/client (React + Vite + TanStack Query)
+  -> apps/server (Express, 크롤링/중계/인덱싱 트리거)
+     -> apps/rag-engine (FastAPI, OpenAI, ChromaDB)
 ```
+
+## 프로젝트 구조
+
+```text
 ai-news-rag
 ├─ apps
-│  ├─ client         # React + Vite 프론트엔드 (뉴스 목록, 상세, 요약 UI)
-│  ├─ server         # Express 백엔드 (크롤링 API, 요약 요청 중계)
-│  └─ rag-engine     # FastAPI 기반 RAG 엔진 (chunking, embedder, generator)
-├─ package.json      # Yarn Workspaces 설정
+│  ├─ client
+│  │  ├─ src/pages
+│  │  │  ├─ NewsList.tsx
+│  │  │  ├─ NewsDetail.tsx
+│  │  │  └─ NewsQA.tsx
+│  │  └─ src/hooks/useTextStream.ts
+│  ├─ server
+│  │  ├─ src/routes (news, summary, qa, index)
+│  │  ├─ src/services (news/index/summary)
+│  │  └─ scripts/batch_index.ts
+│  └─ rag-engine
+│     ├─ app/api (index, summary, qa)
+│     ├─ app/rag (chunker, embedder, retriever, generator, vectordb, qa)
+│     └─ chroma_db (Persistent Vector DB)
+├─ package.json
 └─ README.md
 ```
 
-🛠 기술 스택
-### Frontend
+## 기술 스택
 
-- React
-- Vite
-- React Router
-- TanStack Query
-- Tailwind CSS
+- Frontend: React 19, Vite 7, React Router 7, TanStack Query 5, Tailwind CSS
+- Server: Express 5, Axios, Cheerio, iconv-lite, Helmet, CORS
+- RAG Engine: FastAPI, OpenAI API (`text-embedding-3-small`, `gpt-4.1-mini`), ChromaDB
 
-### Backend
+## API 요약
 
-- Express.js (Node.js)
-- Cheerio (뉴스 크롤링)
-- Axios
-- Helmet + CORS
+### Server (`http://localhost:3001`)
 
-### RAG Engine
+- `GET /api/news?category={category}`: 뉴스 목록 조회
+- `GET /api/news/detail?url={url}`: 뉴스 상세 조회 + 비동기 인덱싱 트리거
+- `POST /api/summary`: 요약 요청을 RAG 엔진으로 전달
+- `POST /api/qa`: 질문 요청을 RAG 엔진으로 전달
+- `POST /api/index`: 문서 인덱싱 요청 전달
 
-- FastAPI
-- OpenAI Embeddings / GPT-4.1 mini
-- Chunker / Generator 모듈 구조
-- (2차 개발 예정) Vector DB + Retriever
+### RAG Engine (`http://localhost:8000`)
 
-⚙️ 실행 방법
-1. 레포 클론
-```
-git clone https://github.com/shinhojung814/ai-news-rag.git
-cd ai-news-rag
-```
+- `POST /index`: 문서 chunk/embedding 생성 후 ChromaDB 저장
+- `POST /summary`: 기사 요약 생성
+- `POST /qa`: 질문 임베딩 + 유사 chunk 검색 + 답변 생성
 
-2. 패키지 설치
-```
-yarn
-```
+## 환경 변수
 
-3. 환경 변수 설정
+### `apps/client/.env.development`
 
-📌 apps/client/.env.development
-```
+```env
 VITE_API_SERVER_URL=http://localhost:3001
 ```
-📌 apps/client/.env.production
-```
-VITE_API_SERVER_URL=https://ai-news-rag-server.onrender.com
-```
 
-📌 apps/server/.env.development
-```
+### `apps/server/.env.development`
+
+```env
 PORT=3001
 CLIENT_URL=http://localhost:5173
 RAG_ENGINE_URL=http://localhost:8000
 ```
-📌 apps/server/.env.production
-```
-PORT=3001
-CLIENT_URL=https://ai-news-rag-client.vercel.app
-RAG_ENGINE_URL=https://ai-news-rag.onrender.com
-```
 
+### `apps/rag-engine/.env`
 
-📌 apps/rag-engine/.env
-```
+```env
 OPENAI_API_KEY=your_api_key_here
 ```
 
-4. 개발 서버 실행
+## 로컬 실행
+
+1. 의존성 설치
+
+```bash
+yarn
 ```
+
+2. RAG 엔진 Python 가상환경/패키지 설치
+
+```bash
+cd apps/rag-engine
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+cd ../..
+```
+
+3. 전체 개발 서버 실행
+
+```bash
 yarn dev
 ```
 
-실행 주소
-```
-Client → http://localhost:5173
+- Client: `http://localhost:5173`
+- Server: `http://localhost:3001`
+- RAG Engine: `http://localhost:8000`
 
-Server → http://localhost:3001
+## 배치 인덱싱
 
-RAG Engine → http://localhost:8000
+RAG 검색 품질을 위해 카테고리별 최신 기사 일부를 미리 인덱싱할 수 있습니다.
+
+```bash
+cd apps/server
+yarn tsx scripts/batch_index.ts
 ```
+
+특징:
+
+- 카테고리별 기사 최대 10건 처리
+- 429/타임아웃 대상 지수 백오프 재시도
+- 기사별 인덱싱 간 딜레이 적용
