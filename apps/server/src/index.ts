@@ -43,7 +43,7 @@ app.use(express.json());
 app.use("/api/news", newRouter);
 app.use("/api/summary", summaryRouter);
 app.use("/api/qa", qaRouter);
-app.use("api/index", indexRouter);
+app.use("/api/index", indexRouter);
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
